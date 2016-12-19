@@ -12,5 +12,6 @@ def check(morning=8, night=18):
     else:
         light = False
 
+    print(now)
     return light
 
