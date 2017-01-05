@@ -14,8 +14,11 @@ def setmode(mode):
     return
 
 
-def setup(pin, mode, pull_up_down = "NONE"):
-    print("Pin " + str(pin) + " configured as " + mode + " " + pull_up_down)
+def setup(pin, mode, initial = "None", pull_up_down = "NONE"):
+    if mode == IN:
+        print("Pin " + str(pin) + " configured as " + mode + " " + str(pull_up_down))
+    elif mode == OUT:
+        print("Pin " + str(pin) + " configured as " + mode + " " + str(initial))
     return
 
 

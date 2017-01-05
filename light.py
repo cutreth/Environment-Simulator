@@ -14,4 +14,3 @@ def check(morning=8, night=18):
 
     print(now)
     return light
-
