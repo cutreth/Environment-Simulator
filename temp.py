@@ -2,7 +2,7 @@ import csv
 import Adafruit_DHT
 
 
-def check(pin, temp, humid, temp_low=65, temp_high=70, humid_low=20, humid_high=30):
+def check(pin, temp, humid, temp_low=70, temp_high=72, humid_low=20, humid_high=30):
 
     humidity, temperature = Adafruit_DHT.read_retry(Adafruit_DHT.AM2302, pin)
     temperature = round(temperature * 9 / 5.0 + 32, 1)
