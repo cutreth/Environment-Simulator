@@ -47,9 +47,9 @@ try:
         out_light = do.bool_to_out(state_light)
         GPIO.output(config_light['pin_out'], out_light)
 
-        print("Temp: " + str(state_temp))
-        print("Humid: " + str(state_humid))
-        print("Light: " + str(state_light))
+        print("Temp: " + str(out_temp))
+        print("Humid: " + str(out_humid))
+        print("Light: " + str(out_light))
 
         time.sleep(30)
 

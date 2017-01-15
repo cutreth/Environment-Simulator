@@ -1,7 +1,8 @@
+import csv
 import Adafruit_DHT
 
 
-def check(pin, temp, humid, temp_low=70, temp_high=75, humid_low=40, humid_high=60):
+def check(pin, temp, humid, temp_low=65, temp_high=70, humid_low=20, humid_high=30):
 
     humidity, temperature = Adafruit_DHT.read_retry(Adafruit_DHT.AM2302, pin)
     temperature = round(temperature * 9 / 5.0 + 32, 1)
@@ -9,6 +10,10 @@ def check(pin, temp, humid, temp_low=70, temp_high=75, humid_low=40, humid_high=
 
     print("Temp: " + str(temperature))
     print("Humid: " + str(humidity))
+    fields = [temperature, humidity]
+    with open('log.txt', 'a') as f:
+        writer = csv.writer(f)
+        writer.writerow(fields)
 
     if temperature < temp_low:
         temp = True
