@@ -1,22 +1,17 @@
-import random
-
-import do
+import Adafruit_DHT
 
 
-def check(pin):
+def check(pin, cold=70, dry=40):
 
-    if do.is_windows():
-        humidity = random.randint(20,80)
-        temperature = random.randint(50,90)
-    else:
-        humidity, temperature = Adafruit_DHT.read_retry(Adafruit_DHT.AM2302,pin)
+    humidity, temperature = Adafruit_DHT.read_retry(Adafruit_DHT.AM2302, pin)
+    temperature * 9 / 5.0 + 32
 
-    if temperature < 70:
+    if temperature < cold:
         temp = True
     else:
         temp = False
 
-    if humidity <40:
+    if humidity < dry:
         humid = True
     else:
         humid = False
