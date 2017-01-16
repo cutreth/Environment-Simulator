@@ -15,7 +15,8 @@ class ReadingAdmin(admin.ModelAdmin):
 
 class ConfigAdmin(admin.ModelAdmin):
     fieldsets = [
-        ('State', {'fields': ['temp_state', 'humid_state', 'light_state']})
+        ('Values', {'fields': ['temp_low', 'temp_high', 'humid_low', 'humid_high']}),
+        ('States', {'fields': ['temp_state', 'humid_state', 'light_state']}),
     ]
 
     readonly_fields = ('instant', )
