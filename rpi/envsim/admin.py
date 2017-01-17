@@ -10,13 +10,14 @@ class ReadingAdmin(admin.ModelAdmin):
         ('States', {'fields': ['temp_state', 'humid_state', 'light_state']}),
     ]
 
-    readonly_fields = ('instant', )
+    readonly_fields = ('instant', 'temp_val', 'humid_val', 'temp_state', 'humid_state', 'light_state')
 
 
 class ConfigAdmin(admin.ModelAdmin):
     fieldsets = [
-        ('Values', {'fields': ['temp_low', 'temp_high', 'humid_low', 'humid_high']}),
+        ('Values', {'fields': ['temp_low', 'temp_high', 'humid_low', 'humid_high', 'hour_morning', 'hour_night']}),
         ('States', {'fields': ['temp_state', 'humid_state', 'light_state']}),
+        ('Pins', {'fields': ['temp_humid_sensor', 'temp_pin', 'humid_pin', 'light_pin']}),
     ]
 
     readonly_fields = ('instant', )
