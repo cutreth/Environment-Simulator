@@ -50,18 +50,23 @@ def export(modeladmin, request, queryset):
 
 export.short_description = u"Export selected readings"
 
+
 class ReadingAdmin(admin.ModelAdmin):
+
     fieldsets = [
         ('Values', {'fields': ['instant', 'temp_val', 'humid_val']}),
         ('States', {'fields': ['temp_state', 'humid_state', 'light_state']}),
     ]
 
-    actions = [export]
-
     readonly_fields = ('instant', 'temp_val', 'humid_val', 'temp_state', 'humid_state', 'light_state')
+
+    date_hierarchy = 'instant'
+
+    actions = [export]
 
 
 class ConfigAdmin(admin.ModelAdmin):
+
     fieldsets = [
         ('Values', {'fields': ['temp_low', 'temp_high', 'humid_low', 'humid_high', 'hour_morning', 'hour_night']}),
         ('States', {'fields': ['temp_state', 'humid_state', 'light_state']}),
