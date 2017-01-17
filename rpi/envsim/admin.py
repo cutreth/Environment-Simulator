@@ -17,12 +17,12 @@ def export(modeladmin, request, queryset):
     row_num = 0
 
     columns = [
-        (u"Instant", 70),
-        (u"Temp Val", 70),
-        (u"Humid Val", 70),
-        (u"Temp State", 70),
-        (u"Humid State", 70),
-        (u"Light State", 70),
+        (u"Instant", 20),
+        (u"Temp Val", 10),
+        (u"Humid Val", 10),
+        (u"Temp State", 12),
+        (u"Humid State", 12),
+        (u"Light State", 12),
     ]
 
     for col_num in xrange(len(columns)):
