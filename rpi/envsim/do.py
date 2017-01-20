@@ -4,6 +4,116 @@ import Adafruit_DHT
 from models import Config, Reading
 
 
+def sync():
+
+    data = fullSync()
+
+    while data['humid_state'] is True:
+        time.sleep(30)
+        data = partSync()
+        if data['humid_state'] is False:
+            data = fullSync()
+
+    return None
+
+
+def fullSync():
+
+    data = {}
+    data = getStates(data)
+
+    newReading(data)
+    updateConfig(data)
+
+    return data
+
+
+def partSync():
+
+    data = {}
+    data = getStates(data)
+
+    return data
+
+
+def getStates(data):
+
+    data = setTempHumid(data)
+    data = setLight(data)
+
+    return data
+
+
+def setTempHumid(data):
+
+    active_config = getConfig()
+    data['temp_state'] = active_config.temp_state
+    temp_low = active_config.temp_low
+    temp_high = active_config.temp_high
+    data['humid_state'] = active_config.humid_state
+    humid_low = active_config.humid_low
+    humid_high = active_config.humid_high
+
+    data['temp_val'], data['humid_val'] = readSensor()
+
+    if data['temp_val'] <= temp_low:
+        data['temp_state'] = True
+    elif data['temp_val'] >= temp_high:
+        data['temp_state'] = False
+
+    if data['humid_val'] <= humid_low:
+        data['humid_state'] = True
+    elif data['humid_val'] >= humid_high:
+        data['humid_state'] = False
+
+    return data
+
+
+def setLight(data):
+
+    now = datetime.datetime.now().time()
+    active_config = getConfig()
+    morning = datetime.time(hour=active_config.hour_morning)
+    night = datetime.time(hour=active_config.hour_night)
+
+    if (morning <= now) & (now <= night):
+        data['light_state'] = True
+    else:
+        data['light_state'] = False
+
+    return data
+
+
+def newReading(data):
+
+    reading = Reading()
+    reading.temp_val = data['temp_val']
+    reading.humid_val = data['humid_val']
+    reading.temp_state = data['temp_state']
+    reading.humid_state = data['humid_state']
+    reading.light_state = data['light_state']
+    reading.save()
+
+    return None
+
+
+def updateConfig(data):
+
+    active_config = getConfig()
+    active_config.temp_state = data['temp_state']
+    active_config.humid_state = data['humid_state']
+    active_config.light_state = data['light_state']
+    active_config.save()
+
+    return None
+
+
+def getConfig():
+
+    active_config = Config.objects.filter()[:1].get()
+    return active_config
+
+
 def average(vals):
 
     avg = sum(vals)/len(vals)
@@ -18,34 +128,12 @@ def stddev(vals):
     return dev
 
 
-def getconfig():
-
-    active_config = Config.objects.filter()[:1].get()
-    return active_config
-
-
-def checktime():
-
-    now = datetime.datetime.now().time()
-    active_config = getconfig()
-
-    morning = datetime.time(hour=active_config.hour_morning)
-    night = datetime.time(hour=active_config.hour_night)
-
-    if (morning < now) & (now < night):
-        light_state = True
-    else:
-        light_state = False
-
-    return light_state
-
-
-def readsensor(tries=4):
+def readSensor(tries=4):
 
     temp_list = []
     humid_list = []
 
-    active_config = getconfig()
+    active_config = getConfig()
     pin = active_config.temp_humid_sensor
 
     temp_count = 0
@@ -87,94 +175,3 @@ def readsensor(tries=4):
     humid_val = round(humid_val, 1)
 
     return temp_val, humid_val
-
-
-def sync():
-
-    temp_state, humid_state, light_state = fullsync()
-
-    while humid_state is True:
-        time.sleep(15)
-        humid_state = livechecks()
-        if humid_state is False:
-            temp_state, humid_state, light_state = fullsync()
-
-    return None
-
-
-def getstates():
-
-    active_config = getconfig()
-    temp_state = active_config.temp_state
-    temp_low = active_config.temp_low
-    temp_high = active_config.temp_high
-    humid_state = active_config.humid_state
-    humid_low = active_config.humid_low
-    humid_high = active_config.humid_high
-
-    temp_val, humid_val = readsensor()
-
-    if temp_val <= temp_low:
-        temp_state = True
-    elif temp_val >= temp_high:
-        temp_state = False
-
-    if humid_val <= humid_low:
-        humid_state = True
-    elif humid_val >= humid_high:
-        humid_state = False
-
-    light_state = checktime()
-    return temp_state, humid_state, light_state, temp_val, humid_val
-
-
-def createread(temp_state, humid_state, light_state, temp_val, humid_val):
-
-    reading = Reading()
-    reading.temp_val = temp_val
-    reading.humid_val = humid_val
-    reading.temp_state = temp_state
-    reading.humid_state = humid_state
-    reading.light_state = light_state
-    reading.save()
-
-    return None
-
-
-def updateconfig(temp_state, humid_state, light_state):
-
-    active_config = getconfig()
-    active_config.temp_state = temp_state
-    active_config.humid_state = humid_state
-    active_config.light_state = light_state
-    active_config.save()
-
-    return None
-
-
-def fullsync():
-
-    temp_state, humid_state, light_state, temp_val, humid_val = getstates()
-
-    createread(temp_state, humid_state, light_state, temp_val, humid_val)
-
-    updateconfig(temp_state, humid_state, light_state)
-
-    return temp_state, humid_state, light_state
-
-
-def livechecks():
-
-    active_config = getconfig()
-    humid_state = active_config.humid_state
-    humid_low = active_config.humid_low
-    humid_high = active_config.humid_high
-
-    temp_val, humid_val = readsensor()
-
-    if humid_val <= humid_low:
-        humid_state = True
-    elif humid_val >= humid_high:
-        humid_state = False
-
-    return humid_state

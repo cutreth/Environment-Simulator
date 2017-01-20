@@ -7,7 +7,7 @@ import models, do
 
 def setup():
 
-    active_config = do.getconfig()
+    active_config = do.getConfig()
 
     GPIO.setmode(GPIO.BCM)
 
