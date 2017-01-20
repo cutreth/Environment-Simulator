@@ -16,6 +16,7 @@ def bool_to_state(state):
 class Reading(models.Model):
 
     instant = models.DateTimeField('Instant', auto_now_add=True, unique=True)
+    error = models.BooleanField('Error')
 
     temp_val = models.DecimalField('Temp Val', blank=True, null=True, max_digits=4, decimal_places=2)
     humid_val = models.DecimalField('Humid Val', blank=True, null=True, max_digits=4, decimal_places=2)
@@ -45,6 +46,7 @@ class Config(models.Model):
     humid_pin = models.PositiveIntegerField('Humid Out', default=23)
     light_pin = models.PositiveIntegerField('Light Out', default=13)
 
+    live_mode = models.BooleanField('Live Mode')
     temp_state = models.BooleanField('Temp State')
     humid_state = models.BooleanField('Humid State')
     light_state = models.BooleanField('Light State')

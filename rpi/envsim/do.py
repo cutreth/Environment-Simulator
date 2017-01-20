@@ -9,10 +9,8 @@ def sync():
     data = fullSync()
 
     while data['humid_state'] is True:
-        time.sleep(30)
-        data = partSync()
-        if data['humid_state'] is False:
-            data = fullSync()
+        partSync(data)
+        data = fullSync()
 
     return None
 
@@ -28,12 +26,24 @@ def fullSync():
     return data
 
 
-def partSync():
+def partSync(data):
 
-    data = {}
-    data = getStates(data)
+    active_config = getConfig()
 
-    return data
+    if active_config.live_mode is False:
+
+        active_config.live_mode = True
+        active_config.save()
+
+        while data['humid_state'] is True:
+
+            time.sleep(30)
+            data = getStates(data)
+
+        active_config.live_mode = False
+        active_config.save()
+
+    return None
 
 
 def getStates(data):
@@ -54,7 +64,7 @@ def setTempHumid(data):
     humid_low = active_config.humid_low
     humid_high = active_config.humid_high
 
-    data['temp_val'], data['humid_val'] = readSensor()
+    data['temp_val'], data['humid_val'], data['error'] = readSensor()
 
     if data['temp_val'] <= temp_low:
         data['temp_state'] = True
@@ -89,6 +99,7 @@ def newReading(data):
     reading = Reading()
     reading.temp_val = data['temp_val']
     reading.humid_val = data['humid_val']
+    reading.error = data['error']
     reading.temp_state = data['temp_state']
     reading.humid_state = data['humid_state']
     reading.light_state = data['light_state']
@@ -130,24 +141,26 @@ def stddev(vals):
 
 def readSensor(tries=4):
 
-    temp_list = []
-    humid_list = []
-
     active_config = getConfig()
     pin = active_config.temp_humid_sensor
 
     temp_count = 0
     humid_count = 0
 
-    while temp_count == 0 & humid_count == 0:
+    temp_list = []
+    humid_list = []
 
-        for count in range(1, tries):
+    error = False
 
-            humid_raw, temp_raw = Adafruit_DHT.read_retry(Adafruit_DHT.AM2302, pin)
+    for count in range(1, tries):
 
-            if (temp_raw > float(0)) & (humid_raw > float(0)):
-                temp_list.append(temp_raw)
-                humid_list.append(humid_raw)
+        humid_raw, temp_raw = Adafruit_DHT.read_retry(Adafruit_DHT.AM2302, pin)
+
+        if (temp_raw > float(0)) & (humid_raw > float(0)):
+            temp_list.append(temp_raw)
+            humid_list.append(humid_raw)
+
+    if (len(temp_list) != 0) & (len(humid_list) != 0):
 
         temp_avg = average(temp_list)
         humid_avg = average(humid_list)
@@ -168,10 +181,16 @@ def readSensor(tries=4):
                 humid_sum += x
                 humid_count += 1
 
+    if (temp_count == 0) | (humid_count == 0):
+        humid_sum, temp_sum = Adafruit_DHT.read_retry(Adafruit_DHT.AM2302, pin)
+        temp_count = 1
+        humid_count = 1
+        error = True
+
     temp_val = temp_sum / temp_count
     humid_val = humid_sum / humid_count
 
     temp_val = round(temp_val * 9 / 5 + 32, 1)
     humid_val = round(humid_val, 1)
 
-    return temp_val, humid_val
+    return temp_val, humid_val, error
