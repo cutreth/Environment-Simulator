@@ -7,7 +7,6 @@ from models import Config, Reading
 def sync():
 
     data = fullSync()
-
     active_config = getConfig()
 
     while (data['humid_state'] is True) & (active_config.live_mode is False):
@@ -31,21 +30,24 @@ def fullSync():
 
 def partSync(data):
 
-    active_config = getConfig()
-    active_config.live_mode = True
-    active_config.save()
+    toggleLiveMode(True)
 
     while data['humid_state'] is True:
-
         time.sleep(30)
         data = getStates(data)
 
-    active_config = getConfig()
-    active_config.live_mode = False
-    active_config.save()
+    toggleLiveMode(False)
 
     return None
 
+
+def toggleLiveMode(state):
+
+    active_config = getConfig()
+    active_config.live_mode = state
+    active_config.save()
+
+    return None
 
 def getStates(data):
 
