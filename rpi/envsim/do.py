@@ -91,18 +91,18 @@ def readsensor(tries=4):
 
 def sync():
 
-    humid_state = syncguts()
+    temp_state, humid_state, light_state = fullsync()
 
-    while humid_state == True:
+    while humid_state is True:
         time.sleep(15)
         humid_state = livechecks()
-        if humid_state == True:
-            syncguts()
+        if humid_state is False:
+            temp_state, humid_state, light_state = fullsync()
 
     return None
 
 
-def syncguts():
+def getstates():
 
     active_config = getconfig()
     temp_state = active_config.temp_state
@@ -125,6 +125,10 @@ def syncguts():
         humid_state = False
 
     light_state = checktime()
+    return temp_state, humid_state, light_state, temp_val, humid_val
+
+
+def createread(temp_state, humid_state, light_state, temp_val, humid_val):
 
     reading = Reading()
     reading.temp_val = temp_val
@@ -134,12 +138,29 @@ def syncguts():
     reading.light_state = light_state
     reading.save()
 
+    return None
+
+
+def updateconfig(temp_state, humid_state, light_state):
+
+    active_config = getconfig()
     active_config.temp_state = temp_state
     active_config.humid_state = humid_state
     active_config.light_state = light_state
     active_config.save()
 
-    return humid_state
+    return None
+
+
+def fullsync():
+
+    temp_state, humid_state, light_state, temp_val, humid_val = getstates()
+
+    createread(temp_state, humid_state, light_state, temp_val, humid_val)
+
+    updateconfig(temp_state, humid_state, light_state)
+
+    return temp_state, humid_state, light_state
 
 
 def livechecks():
