@@ -8,9 +8,12 @@ def sync():
 
     data = fullSync()
 
-    while data['humid_state'] is True:
+    active_config = getConfig()
+
+    while (data['humid_state'] is True) & (active_config.live_mode is False):
         partSync(data)
         data = fullSync()
+        active_config = getConfig()
 
     return None
 
@@ -29,19 +32,17 @@ def fullSync():
 def partSync(data):
 
     active_config = getConfig()
+    active_config.live_mode = True
+    active_config.save()
 
-    if active_config.live_mode is False:
+    while data['humid_state'] is True:
 
-        active_config.live_mode = True
-        active_config.save()
+        time.sleep(30)
+        data = getStates(data)
 
-        while data['humid_state'] is True:
-
-            time.sleep(30)
-            data = getStates(data)
-
-        active_config.live_mode = False
-        active_config.save()
+    active_config = getConfig()
+    active_config.live_mode = False
+    active_config.save()
 
     return None
 
