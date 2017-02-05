@@ -6,38 +6,82 @@
 
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
-        google.charts.load('current', {packages: ['annotationchart']});
+        google.charts.load('current', {packages: ['annotationchart', 'gauge']});
         google.charts.setOnLoadCallback(drawChart1);
         google.charts.setOnLoadCallback(drawChart2);
+        google.charts.setOnLoadCallback(drawGauge1);
+        google.charts.setOnLoadCallback(drawGauge2);
 
         function drawChart1() {
 
-            var data1 = new google.visualization.arrayToDataTable({{ temp_data|safe|cut:"'"}});
-            var chart1 = new google.visualization.AnnotationChart(document.getElementById('temp'));
+            var data = new google.visualization.arrayToDataTable({{ temp_data|safe|cut:"'"}});
+            var chart = new google.visualization.AnnotationChart(document.getElementById('temp'));
 
-            var options1 = {
+            var options = {
                 displayAnnotations: false,
                 displayZoomButtons: false,
                 colors: ['blue'],
                 min: 50,
                 max: 90,
             }
-            chart1.draw(data1, options1);
+            chart.draw(data, options);
         }
 
         function drawChart2() {
 
-            var data2 = new google.visualization.arrayToDataTable({{ humid_data|safe|cut:"'"}});
-            var chart2 = new google.visualization.AnnotationChart(document.getElementById('humid'));
+            var data = new google.visualization.arrayToDataTable({{ humid_data|safe|cut:"'"}});
+            var chart = new google.visualization.AnnotationChart(document.getElementById('humid'));
 
-            var options2 = {
+            var options = {
                 displayAnnotations: false,
                 displayZoomButtons: false,
                 colors: ['red'],
                 min: 0,
                 max: 100,
             }
-            chart2.draw(data2, options2);
+            chart.draw(data, options);
+        }
+
+        function drawGauge1() {
+
+            var data = google.visualization.arrayToDataTable([
+                ['Label', 'Value'],
+                ['Temp', {{vals.temp}}],
+            ]);
+            var chart = new google.visualization.Gauge(document.getElementById('temp_g'));
+
+            var options = {
+                yellowFrom: 60,
+                yellowTo: {{vals.temp_low}},
+                greenFrom: {{vals.temp_low}},
+                greenTo: {{vals.temp_high}},
+                redFrom: {{vals.temp_high}},
+                redTo: 100,
+                min: 60,
+                max: 100,
+            }
+            chart.draw(data, options);
+        }
+
+        function drawGauge2() {
+
+            var data = google.visualization.arrayToDataTable([
+                ['Label', 'Value'],
+                ['Humid', {{ vals.humid}}],
+            ]);
+            var chart = new google.visualization.Gauge(document.getElementById('humid_g'));
+
+            var options = {
+                yellowFrom: 0,
+                yellowTo: {{vals.humid_low}},
+                greenFrom: {{vals.humid_low}},
+                greenTo: {{vals.humid_high}},
+                redFrom: {{vals.humid_high}},
+                redTo: 100,
+                min: 0,
+                max: 100,
+            }
+            chart.draw(data, options);
         }
 
     </script>
@@ -46,10 +90,16 @@
 <body>
     <table>
         <tr>
-            <td><div id="temp" style="width:1800px; height:400px;"/></td>
+            <td><div id="temp_g" /></td>
+            <td><div id="humid_g"/></td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td><div id="temp" style="width:1800px; height:350px;"/></td>
         </tr>
         <tr>
-            <td><div id="humid" style="width:1800px; height:400px;"/></td>
+            <td><div id="humid" style="width:1800px; height:350px;"/></td>
         </tr>
     </table>
 </body>
