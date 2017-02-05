@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chart</title>
+
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load('current', {packages: ['annotationchart']});
+        google.charts.setOnLoadCallback(drawChart1);
+        google.charts.setOnLoadCallback(drawChart2);
+
+        function drawChart1() {
+
+            var data1 = new google.visualization.arrayToDataTable({{ temp_data|safe|cut:"'"}});
+            var chart1 = new google.visualization.AnnotationChart(document.getElementById('temp'));
+
+            var options1 = {
+                displayAnnotations: false,
+                displayZoomButtons: false,
+                colors: ['blue'],
+                min: 50,
+                max: 90,
+            }
+            chart1.draw(data1, options1);
+        }
+
+        function drawChart2() {
+
+            var data2 = new google.visualization.arrayToDataTable({{ humid_data|safe|cut:"'"}});
+            var chart2 = new google.visualization.AnnotationChart(document.getElementById('humid'));
+
+            var options2 = {
+                displayAnnotations: false,
+                displayZoomButtons: false,
+                colors: ['red'],
+                min: 0,
+                max: 100,
+            }
+            chart2.draw(data2, options2);
+        }
+
+    </script>
+
+</head>
+<body>
+    <table>
+        <tr>
+            <td><div id="temp" style="width:1800px; height:400px;"/></td>
+        </tr>
+        <tr>
+            <td><div id="humid" style="width:1800px; height:400px;"/></td>
+        </tr>
+    </table>
+</body>
+</html>

@@ -1,8 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, render_to_response
 from django.http import HttpResponse
+from datetime import datetime, timedelta
 
 import RPi.GPIO as GPIO
 import models, do
+
+from models import Reading
 
 
 def setup():
@@ -30,3 +33,28 @@ def sync(request):
     do.sync()
     response = HttpResponse('Sync successful')
     return response
+
+
+def chart(request):
+
+    temp_data = [["'Instant'", "'Temp'", "'Temp T'", "'Temp D'"]]
+    humid_data = [["'Instant'", "'Humid'", "'Humid T'", "'Humid D'"]]
+    temp_add = []
+    humid_add = []
+
+    all_readings = Reading.objects.filter(instant__gte=(datetime.now() - timedelta(days=5)))
+
+    for reading in all_readings:
+        temp_add = ['new Date("' + str(reading.instant) + '")',
+               str(reading.temp_val), 'undefined', 'undefined'
+              ]
+        humid_add = ['new Date("' + str(reading.instant) + '")',
+               str(reading.humid_val), 'undefined', 'undefined'
+              ]
+
+        temp_data.append(temp_add)
+        humid_data.append(humid_add)
+
+    data = {'temp_data': temp_data, 'humid_data': humid_data}
+
+    return render_to_response('chart.html', data)
