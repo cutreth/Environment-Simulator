@@ -46,7 +46,6 @@ class Config(models.Model):
     humid_pin = models.PositiveIntegerField('Humid Out', default=23)
     light_pin = models.PositiveIntegerField('Light Out', default=13)
 
-    live_mode = models.BooleanField('Live Mode')
     temp_state = models.BooleanField('Temp State')
     humid_state = models.BooleanField('Humid State')
     light_state = models.BooleanField('Light State')
