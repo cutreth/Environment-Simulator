@@ -54,13 +54,17 @@ def chart(request):
         temp_data.append(temp_add)
         humid_data.append(humid_add)
 
+        instant = str(reading)
         temp_gauge = str(reading.temp_val)
         humid_gauge = str(reading.humid_val)
 
     active_config = do.getConfig()
 
-    data = {'temp_data': temp_data, 'humid_data': humid_data, 'vals': {
+    data = {'temp_data': temp_data, 'humid_data': humid_data, 'vals': {'instant': instant,
+        'light_state': active_config.light_state, 'hour_morning': active_config.hour_morning, 'hour_night': active_config.hour_night,
         'temp': temp_gauge, 'temp_low': active_config.temp_low, 'temp_high': active_config.temp_high,
-        'humid': humid_gauge, 'humid_low': active_config.humid_low, 'humid_high': active_config.humid_high}}
+        'temp_state': active_config.temp_state, 'temp_low': active_config.temp_low, 'temp_high': active_config.temp_high,
+        'humid': humid_gauge, 'humid_low': active_config.humid_low, 'humid_high': active_config.humid_high,
+        'humid_state': active_config.humid_state, 'humid_low': active_config.humid_low, 'humid_high': active_config.humid_high}}
 
     return render_to_response('chart.html', data)
