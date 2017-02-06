@@ -2,22 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Chart</title>
+    <title>Envsim - Chart</title>
 
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
         google.charts.load('current', {packages: ['annotationchart', 'gauge']});
 
-        google.charts.setOnLoadCallback(drawChart1);
-        google.charts.setOnLoadCallback(drawChart2);
-        google.charts.setOnLoadCallback(drawGauge1);
-        google.charts.setOnLoadCallback(drawGauge2);
+        google.charts.setOnLoadCallback(drawChartT);
+        google.charts.setOnLoadCallback(drawChartH);
+        google.charts.setOnLoadCallback(drawGaugeT);
+        google.charts.setOnLoadCallback(drawGaugeH);
 
-        function drawChart1() {
+        function drawChartT() {
 
             var data = new google.visualization.arrayToDataTable({{ temp_data|safe|cut:"'"}});
             var chart = new google.visualization.AnnotationChart(document.getElementById('temp'));
-
             var options = {
                 displayAnnotations: false,
                 displayZoomButtons: false,
@@ -27,14 +26,14 @@
                 zoomEndTime: new Date("{{ vals.end_time }}"),
                 zoomStartTime: new Date("{{ vals.start_time }}"),
             }
+
             chart.draw(data, options);
         }
 
-        function drawChart2() {
+        function drawChartH() {
 
             var data = new google.visualization.arrayToDataTable({{ humid_data|safe|cut:"'"}});
             var chart = new google.visualization.AnnotationChart(document.getElementById('humid'));
-
             var options = {
                 displayAnnotations: false,
                 displayZoomButtons: false,
@@ -44,17 +43,17 @@
                 zoomEndTime: new Date("{{ vals.end_time }}"),
                 zoomStartTime: new Date("{{ vals.start_time }}"),
             }
+
             chart.draw(data, options);
         }
 
-        function drawGauge1() {
+        function drawGaugeT() {
 
             var data = google.visualization.arrayToDataTable([
                 ['Label', 'Value'],
                 ['Temp', {{vals.temp}}],
             ]);
             var chart = new google.visualization.Gauge(document.getElementById('temp_g'));
-
             var options = {
                 yellowFrom: 60,
                 yellowTo: {{vals.temp_low}},
@@ -65,17 +64,17 @@
                 min: 60,
                 max: 100,
             }
+
             chart.draw(data, options);
         }
 
-        function drawGauge2() {
+        function drawGaugeH() {
 
             var data = google.visualization.arrayToDataTable([
                 ['Label', 'Value'],
                 ['Humid', {{ vals.humid}}],
             ]);
             var chart = new google.visualization.Gauge(document.getElementById('humid_g'));
-
             var options = {
                 yellowFrom: 0,
                 yellowTo: {{vals.humid_low}},
@@ -86,6 +85,7 @@
                 min: 0,
                 max: 100,
             }
+
             chart.draw(data, options);
         }
 
@@ -97,9 +97,19 @@
         <tr>
             <td><div id="temp_g" /></td>
             <td><div id="humid_g"/></td>
-            <td><b>{{vals.instant}}<br>Temp: {{vals.temp}}<br>Humid: {{vals.humid}}</b></td>
-            <td>Light State: {{vals.light_state}}<br>Temp State: {{vals.temp_state}}<br>Humid State: {{vals.humid_state}}</td>
-            <td>Light Bounds: {{vals.hour_morning}} - {{vals.hour_night}}<br>Temp Bounds: {{vals.temp_low}} - {{vals.temp_high}}<br>Humid Bounds: {{vals.humid_low}} - {{vals.humid_high}}</td>
+            <td><b>
+                {{vals.instant}}<br>
+                Temp: {{vals.temp}}<br>
+                Humid: {{vals.humid}}
+            </b></td>
+            <td>
+                Light State: {{vals.light_state}}<br>
+                Temp State: {{vals.temp_state}}<br>
+                Humid State: {{vals.humid_state}}</td>
+            <td>
+                Light Bounds: {{vals.hour_morning}} - {{vals.hour_night}}<br>
+                Temp Bounds: {{vals.temp_low}} - {{vals.temp_high}}<br>
+                Humid Bounds: {{vals.humid_low}} - {{vals.humid_high}}</td>
         </tr>
     </table>
     <table>

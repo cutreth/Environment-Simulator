@@ -6,21 +6,16 @@ from models import Config, Reading
 
 def sync():
 
-    data = fullSync()
-    active_config = getConfig()
-
-    return None
-
-
-def fullSync():
-
     data = {}
     data = getStates(data)
 
     newReading(data)
     updateConfig(data)
 
-    return data
+    old_readings = Reading.objects.filter(instant__lt=(datetime.datetime.now() - datetime.timedelta(days=14)))
+    old_readings.delete()
+
+    return None
 
 
 def getStates(data):

@@ -73,7 +73,7 @@ class ConfigAdmin(admin.ModelAdmin):
         ('Pins', {'fields': ['temp_humid_sensor', 'temp_pin', 'humid_pin', 'light_pin']}),
     ]
 
-    readonly_fields = ('instant', )
+    readonly_fields = ('instant',)
 
 admin.site.register(Reading, ReadingAdmin)
 admin.site.register(Config, ConfigAdmin)
