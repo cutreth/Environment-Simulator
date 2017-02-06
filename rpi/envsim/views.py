@@ -31,8 +31,7 @@ setup()
 
 def sync(request):
     do.sync()
-    response = HttpResponse('Sync successful')
-    return response
+    return chart(request)
 
 
 def chart(request):
