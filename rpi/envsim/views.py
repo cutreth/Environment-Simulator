@@ -41,7 +41,7 @@ def chart(request):
     temp_add = []
     humid_add = []
 
-    all_readings = Reading.objects.filter(instant__gte=(datetime.now() - timedelta(days=5)))
+    all_readings = Reading.objects.filter(instant__gte=(datetime.now() - timedelta(days=7)))
 
     for reading in all_readings:
         temp_add = ['new Date("' + str(reading.instant) + '")',
@@ -59,8 +59,10 @@ def chart(request):
         humid_gauge = str(reading.humid_val)
 
     active_config = do.getConfig()
+    end_time = datetime.now().date() + timedelta(days=1)
+    start_time = end_time - timedelta(days=3)
 
-    data = {'temp_data': temp_data, 'humid_data': humid_data, 'vals': {'instant': instant,
+    data = {'temp_data': temp_data, 'humid_data': humid_data, 'vals': {'instant': instant, 'end_time': end_time.isoformat(), 'start_time': start_time.isoformat(),
         'light_state': active_config.light_state, 'hour_morning': active_config.hour_morning, 'hour_night': active_config.hour_night,
         'temp': temp_gauge, 'temp_low': active_config.temp_low, 'temp_high': active_config.temp_high,
         'temp_state': active_config.temp_state, 'temp_low': active_config.temp_low, 'temp_high': active_config.temp_high,
