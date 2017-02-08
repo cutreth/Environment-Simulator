@@ -64,8 +64,8 @@ def chart(request):
     humid_data.append(humid_add)
 
     active_config = do.getConfig()
-    end_time = datetime.now().date() + timedelta(days=1)
-    start_time = end_time - timedelta(days=4)
+    end_time = reading.instant + timedelta(hours=12)
+    start_time = reading.instant - timedelta(days=4)
 
     data = {'temp_data': temp_data, 'humid_data': humid_data,
             'vals': {'end_time': end_time.isoformat(), 'start_time': start_time.isoformat(),
