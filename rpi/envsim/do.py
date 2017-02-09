@@ -58,8 +58,8 @@ def setTempHumid(data):
     if data['light_state'] == False:
         temp_low -= 10
         temp_high -= 10
-        humid_low += 30
-        humid_high += 30
+        humid_low += 20
+        humid_high += 20
 
     if data['temp_val'] <= temp_low:
         data['temp_state'] = True
