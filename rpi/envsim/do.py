@@ -6,22 +6,39 @@ from models import Config, Reading
 
 def sync():
 
-    data = {}
-    data = getStates(data)
+    try:
+        data = {}
+        data = getStates(data)
 
-    newReading(data)
-    updateConfig(data)
+        newReading(data)
+        updateConfig(data)
 
-    old_readings = Reading.objects.filter(instant__lt=(datetime.datetime.now() - datetime.timedelta(days=14)))
-    old_readings.delete()
+        old_readings = Reading.objects.filter(instant__lt=(datetime.datetime.now() - datetime.timedelta(days=14)))
+        old_readings.delete()
+    except Exception:
+        logError()
+
+    return None
+
+
+def logError():
+
+    reading = Reading()
+    reading.temp_val = 100
+    reading.humid_val = 100
+    reading.error = True
+    reading.temp_state = False
+    reading.humid_state = False
+    reading.light_state = False
+    reading.save()
 
     return None
 
 
 def getStates(data):
 
-    data = setTempHumid(data)
     data = setLight(data)
+    data = setTempHumid(data)
 
     return data
 
@@ -41,8 +58,8 @@ def setTempHumid(data):
     if data['light_state'] == False:
         temp_low -= 10
         temp_high -= 10
-        humid_low += 20
-        humid_high += 20
+        humid_low += 30
+        humid_high += 30
 
     if data['temp_val'] <= temp_low:
         data['temp_state'] = True
