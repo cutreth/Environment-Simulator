@@ -65,7 +65,7 @@ def chart(request):
 
     active_config = do.getConfig()
     end_time = reading.instant + timedelta(hours=12)
-    start_time = reading.instant - timedelta(hours=36)
+    start_time = reading.instant - timedelta(hours=48)
 
     data = {'temp_data': temp_data, 'humid_data': humid_data,
             'vals': {'end_time': end_time.isoformat(), 'start_time': start_time.isoformat(),
