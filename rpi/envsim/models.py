@@ -59,10 +59,10 @@ class Config(models.Model):
         temp_pin = self.temp_pin
         GPIO.output(temp_pin, temp_out)
 
-        humid_out = bool_to_state(self.humid_state)
-        humid_pin = self.humid_pin
-        GPIO.output(humid_pin, humid_out)
-
         light_out = bool_to_state(self.light_state)
         light_pin = self.light_pin
         GPIO.output(light_pin, light_out)
+
+        humid_out = bool_to_state(self.humid_state)
+        humid_pin = self.humid_pin
+        GPIO.output(humid_pin, humid_out)

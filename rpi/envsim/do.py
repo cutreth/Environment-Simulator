@@ -56,10 +56,10 @@ def setTempHumid(data):
     data['temp_val'], data['humid_val'], data['error'] = readSensor()
 
     if data['light_state'] == False:
-        temp_low -= 10
-        temp_high -= 10
-        humid_low += 20
-        humid_high += 20
+        temp_low -= 0
+        temp_high -= 0
+        humid_low += 0
+        humid_high += 0
 
     if data['temp_val'] <= temp_low:
         data['temp_state'] = True
