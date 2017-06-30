@@ -34,8 +34,8 @@ def sync(request):
 
 
 def chart(request):
-    temp_data = [["'Instant'", "'Temp'", "'Temp T'", "'Temp D'"]]
-    humid_data = [["'Instant'", "'Humid'", "'Humid T'", "'Humid D'"]]
+    temp_data = [["'Instant'", "'Temp Value'", "'Temp State'", "'Temp D'"]]
+    humid_data = [["'Instant'", "'Humid Value'", "'Humid State'", "'Humid D'"]]
     temp_add = []
     humid_add = []
 
@@ -43,10 +43,10 @@ def chart(request):
 
     for reading in all_readings:
         temp_add = ['new Date("' + str(reading.instant) + '")',
-                    str(reading.temp_val), 'undefined', 'undefined'
+                    str(reading.temp_val), str(0 if reading.temp_state is False else 60), 'undefined'
                     ]
         humid_add = ['new Date("' + str(reading.instant) + '")',
-                     str(reading.humid_val), 'undefined', 'undefined'
+                     str(reading.humid_val), str(0 if reading.humid_state is False else 40), 'undefined'
                      ]
 
         temp_data.append(temp_add)
