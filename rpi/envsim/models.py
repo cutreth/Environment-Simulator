@@ -38,6 +38,7 @@ class Config(models.Model):
     humid_low = models.DecimalField('Humid Low', max_digits=4, decimal_places=2, default=10)
     humid_high = models.DecimalField('Humid High', max_digits=4, decimal_places=2, default=40)
 
+    humid_count = models.PositiveIntegerField('Humid Count', default=0)
     hour_morning = models.PositiveIntegerField('Morning Hour', default=8)
     hour_night = models.PositiveIntegerField('Night Hour', default=18)
 

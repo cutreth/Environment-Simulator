@@ -52,6 +52,7 @@ def setTempHumid(data):
     data['humid_state'] = active_config.humid_state
     humid_low = active_config.humid_low
     humid_high = active_config.humid_high
+    humid_count = active_config.humid_count
 
     data['temp_val'], data['humid_val'], data['error'] = readSensor()
 
@@ -66,10 +67,21 @@ def setTempHumid(data):
     elif data['temp_val'] >= temp_high:
         data['temp_state'] = False
 
-    if data['humid_val'] <= humid_low:
-        data['humid_state'] = True
-    elif data['humid_val'] >= humid_high:
-        data['humid_state'] = False
+    if humid_count == 0:
+        if data['humid_val'] <= humid_low:
+            data['humid_state'] = True
+            humid_count = 1
+        elif data['humid_val'] >= humid_high:
+            data['humid_state'] = False
+    else:
+        if humid_count == 15:
+            data['humid_state'] = False
+            humid_count = 0
+        else:
+            data['humid_state'] = True
+            humid_count += 1
+
+    updateHumidCount(humid_count)
 
     return data
 
@@ -118,6 +130,14 @@ def getConfig():
 
     active_config = Config.objects.filter()[:1].get()
     return active_config
+
+
+def updateHumidCount(value):
+
+    active_config = getConfig()
+    active_config.humid_count = value
+    active_config.save()
+    return None
 
 
 def average(vals):
