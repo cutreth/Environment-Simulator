@@ -53,6 +53,7 @@ def setTempHumid(data):
     humid_low = active_config.humid_low
     humid_high = active_config.humid_high
     humid_count = active_config.humid_count
+    humid_length = active_config.humid_length
 
     data['temp_val'], data['humid_val'], data['error'] = readSensor()
 
@@ -74,7 +75,7 @@ def setTempHumid(data):
         elif data['humid_val'] >= humid_high:
             data['humid_state'] = False
     else:
-        if humid_count == 15:
+        if humid_count == (humid_length + 1):
             data['humid_state'] = False
             humid_count = 0
         else:

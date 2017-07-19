@@ -28,6 +28,7 @@ class Reading(models.Model):
     def __str__(self):
         return str(self.instant.strftime('%Y-%m-%d %H:%M:%S'))
 
+#for python manage.py makemigrations/migrate -> comment envisim/views.py calling setup()
 
 class Config(models.Model):
 
@@ -39,6 +40,7 @@ class Config(models.Model):
     humid_high = models.DecimalField('Humid High', max_digits=4, decimal_places=2, default=40)
 
     humid_count = models.PositiveIntegerField('Humid Count', default=0)
+    humid_length = models.PositiveIntegerField('Humid Length', default=10)
     hour_morning = models.PositiveIntegerField('Morning Hour', default=8)
     hour_night = models.PositiveIntegerField('Night Hour', default=18)
 

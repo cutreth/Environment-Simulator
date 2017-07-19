@@ -68,7 +68,7 @@ class ReadingAdmin(admin.ModelAdmin):
 class ConfigAdmin(admin.ModelAdmin):
 
     fieldsets = [
-        ('Values', {'fields': ['temp_low', 'temp_high', 'humid_low', 'humid_high', 'humid_count', 'hour_morning', 'hour_night']}),
+        ('Values', {'fields': ['temp_low', 'temp_high', 'humid_low', 'humid_high', 'humid_count', 'humid_length', 'hour_morning', 'hour_night']}),
         ('States', {'fields': ['temp_state', 'humid_state', 'light_state']}),
         ('Pins', {'fields': ['temp_humid_sensor', 'temp_pin', 'humid_pin', 'light_pin']}),
     ]
