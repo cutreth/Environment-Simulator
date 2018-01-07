@@ -40,31 +40,33 @@ def chart(request):
     humid_add = []
 
     all_readings = Reading.objects.all()
+    reading_last = all_readings.last()
 
     for reading in all_readings:
-        temp_add = ['new Date("' + str(reading.instant) + '")',
-                    str(reading.temp_val), str(0 if reading.temp_state is False else 60), 'undefined'
-                    ]
-        humid_add = ['new Date("' + str(reading.instant) + '")',
-                     str(reading.humid_val), str(0 if reading.humid_state is False else 40), 'undefined'
-                     ]
 
-        temp_data.append(temp_add)
-        humid_data.append(humid_add)
+        if reading.instant > reading_last.instant - timedelta(hours=96):
+            temp_add = ['new Date("' + str(reading.instant) + '")',
+                        str(reading.temp_val), str(0 if reading.temp_state is False else 60), 'undefined'
+                        ]
+            humid_add = ['new Date("' + str(reading.instant) + '")',
+                         str(reading.humid_val), str(0 if reading.humid_state is False else 40), 'undefined'
+                         ]
 
-    reading = all_readings.last()
-    instant = str(reading)
-    temp_gauge = str(reading.temp_val)
-    humid_gauge = str(reading.humid_val)
+            temp_data.append(temp_add)
+            humid_data.append(humid_add)
 
-    temp_add = ['new Date("' + str(reading.instant + timedelta(days=1)) + '")', 'undefined', 'undefined', 'undefined']
-    humid_add = ['new Date("' + str(reading.instant + timedelta(days=1)) + '")', 'undefined', 'undefined', 'undefined']
+    instant = str(reading_last)
+    temp_gauge = str(reading_last.temp_val)
+    humid_gauge = str(reading_last.humid_val)
+
+    temp_add = ['new Date("' + str(reading_last.instant + timedelta(days=1)) + '")', 'undefined', 'undefined', 'undefined']
+    humid_add = ['new Date("' + str(reading_last.instant + timedelta(days=1)) + '")', 'undefined', 'undefined', 'undefined']
     temp_data.append(temp_add)
     humid_data.append(humid_add)
 
     active_config = do.getConfig()
-    end_time = reading.instant + timedelta(hours=12)
-    start_time = reading.instant - timedelta(hours=48)
+    end_time = reading_last.instant + timedelta(hours=4)
+    start_time = reading_last.instant - timedelta(hours=52)
 
     data = {'temp_data': temp_data, 'humid_data': humid_data,
             'vals': {'end_time': end_time.isoformat(), 'start_time': start_time.isoformat(),

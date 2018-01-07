@@ -6,17 +6,16 @@ from models import Config, Reading
 
 def sync():
 
-    try:
-        data = {}
-        data = getStates(data)
 
-        newReading(data)
-        updateConfig(data)
+    data = {}
+    data = getStates(data)
 
-        old_readings = Reading.objects.filter(instant__lt=(datetime.datetime.now() - datetime.timedelta(days=14)))
-        old_readings.delete()
-    except Exception:
-        logError()
+    newReading(data)
+    updateConfig(data)
+
+    old_readings = Reading.objects.filter(instant__lt=(datetime.datetime.now() - datetime.timedelta(days=14)))
+    old_readings.delete()
+
 
     return None
 
@@ -24,8 +23,8 @@ def sync():
 def logError():
 
     reading = Reading()
-    reading.temp_val = 100
-    reading.humid_val = 100
+    reading.temp_val = 95
+    reading.humid_val = 95
     reading.error = True
     reading.temp_state = False
     reading.humid_state = False
@@ -55,24 +54,21 @@ def setTempHumid(data):
     humid_count = active_config.humid_count
     humid_length = active_config.humid_length
 
-    data['temp_val'], data['humid_val'], data['error'] = readSensor()
+    data['temp_val'], data['temp_val2'], data['humid_val'], data['humid_val2'], data['error'] = readSensor()
 
-    if data['light_state'] == False:
-        temp_low -= 0
-        temp_high -= 0
-        humid_low += 0
-        humid_high += 0
+    temp = (data['temp_val'] + data['temp_val2']) / 2
+    humid = (data['humid_val'] + data['humid_val2']) / 2
 
-    if data['temp_val'] <= temp_low:
+    if temp <= temp_low:
         data['temp_state'] = True
-    elif data['temp_val'] >= temp_high:
+    elif temp >= temp_high:
         data['temp_state'] = False
 
     if humid_count == 0:
-        if data['humid_val'] <= humid_low:
+        if humid <= humid_low:
             data['humid_state'] = True
             humid_count = 1
-        elif data['humid_val'] >= humid_high:
+        elif humid >= humid_high:
             data['humid_state'] = False
     else:
         if humid_count == (humid_length + 1):
@@ -106,7 +102,9 @@ def newReading(data):
 
     reading = Reading()
     reading.temp_val = data['temp_val']
+    reading.temp_val2 = data['temp_val2']
     reading.humid_val = data['humid_val']
+    reading.humid_val2 = data['humid_val2']
     reading.error = data['error']
     reading.temp_state = data['temp_state']
     reading.humid_state = data['humid_state']
@@ -155,58 +153,41 @@ def stddev(vals):
     return dev
 
 
-def readSensor(tries=4):
+def readSensor():
 
     active_config = getConfig()
-    pin = active_config.temp_humid_sensor
-
-    temp_count = 0
-    humid_count = 0
-
-    temp_list = []
-    humid_list = []
-
+    pin1 = active_config.temp_humid_sensor
+    pin2 = active_config.temp_humid_sensor2
     error = False
 
-    for count in range(1, tries):
-
-        humid_raw, temp_raw = Adafruit_DHT.read_retry(Adafruit_DHT.AM2302, pin)
-
-        if (temp_raw > float(0)) & (humid_raw > float(0)):
-            temp_list.append(temp_raw)
-            humid_list.append(humid_raw)
-
-    if (len(temp_list) != 0) & (len(humid_list) != 0):
-
-        temp_avg = average(temp_list)
-        humid_avg = average(humid_list)
-
-        temp_dev = stddev(temp_list)
-        humid_dev = stddev(humid_list)
-
-        temp_sum = 0
-        humid_sum = 0
-
-        for x in temp_list:
-            if abs(x - temp_avg) <= temp_dev:
-                temp_sum += x
-                temp_count += 1
-
-        for x in humid_list:
-            if abs(x - humid_avg) <= humid_dev:
-                humid_sum += x
-                humid_count += 1
-
-    if (temp_count == 0) | (humid_count == 0):
-        humid_sum, temp_sum = Adafruit_DHT.read_retry(Adafruit_DHT.AM2302, pin)
-        temp_count = 1
-        humid_count = 1
+    try:
+        humid_val, temp_val = Adafruit_DHT.read_retry(Adafruit_DHT.AM2302, pin1)
+    except Exception:
+        humid_val = 11
+        temp_val = 99
         error = True
 
-    temp_val = temp_sum / temp_count
-    humid_val = humid_sum / humid_count
+    try:
+        humid_val2, temp_val2 = Adafruit_DHT.read_retry(Adafruit_DHT.AM2302, pin2)
+    except Exception:
+        humid_val2 = 11
+        temp_val2 = 99
+        error = True
 
-    temp_val = round(temp_val * 9 / 5 + 32, 1)
-    humid_val = round(humid_val, 1)
+    try:
+        temp_val = round(temp_val * 9 / 5 + 32, 1)
+        humid_val = round(humid_val, 1)
+    except Exception:
+        humid_val = 11
+        temp_val = 99
+        error = True
 
-    return temp_val, humid_val, error
+    try:
+        temp_val2 = round(temp_val2 * 9 / 5 + 32, 1)
+        humid_val2 = round(humid_val2, 1)
+    except Exception:
+        humid_val2 = 11
+        temp_val2 = 99
+        error = True
+
+    return temp_val, temp_val2, humid_val, humid_val2, error

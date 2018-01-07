@@ -19,7 +19,9 @@ class Reading(models.Model):
     error = models.BooleanField('Error')
 
     temp_val = models.DecimalField('Temp Val', blank=True, null=True, max_digits=4, decimal_places=2)
+    temp_val2 = models.DecimalField('Temp Val2', blank=True, null=True, max_digits=4, decimal_places=2)
     humid_val = models.DecimalField('Humid Val', blank=True, null=True, max_digits=4, decimal_places=2)
+    humid_val2 = models.DecimalField('Humid Val2', blank=True, null=True, max_digits=4, decimal_places=2)
 
     temp_state = models.NullBooleanField('Temp State')
     humid_state = models.NullBooleanField('Humid State')
@@ -45,6 +47,7 @@ class Config(models.Model):
     hour_night = models.PositiveIntegerField('Night Hour', default=18)
 
     temp_humid_sensor = models.PositiveIntegerField('Temp/Humid In', default=5)
+    temp_humid_sensor2 = models.PositiveIntegerField('Temp/Humid In 2', default=17)
     temp_pin = models.PositiveIntegerField('Temp Out', default=21)
     humid_pin = models.PositiveIntegerField('Humid Out', default=23)
     light_pin = models.PositiveIntegerField('Light Out', default=13)
