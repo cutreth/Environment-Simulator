@@ -45,19 +45,47 @@ def chart(request):
     for reading in all_readings:
 
         if reading.instant > reading_last.instant - timedelta(hours=96):
+
+            count = 0
+            temp = 0
+            humid = 0
+
+            if (reading.temp_val != None) & (reading.humid_val != None):
+                count = count + 1
+                temp = temp + reading.temp_val
+                humid = humid + reading.humid_val
+
+            if (reading.temp_val2 != None) & (reading.humid_val2 != None):
+                count = count + 1
+                temp = temp + reading.temp_val2
+                humid = humid + reading.humid_val2
+
+            if (reading.temp_val3 != None) & (reading.humid_val3 != None):
+                count = count + 1
+                temp = temp + reading.temp_val3
+                humid = humid + reading.humid_val3
+
+            if count == 0:
+                count = 1
+                temp = 50
+                humid = 50
+
+            temp = round(temp / count, 1)
+            humid = round(humid / count, 1)
+
             temp_add = ['new Date("' + str(reading.instant) + '")',
-                        str(reading.temp_val), str(0 if reading.temp_state is False else 60), 'undefined'
+                        str(temp), str(0 if reading.temp_state is False else 60), 'undefined'
                         ]
             humid_add = ['new Date("' + str(reading.instant) + '")',
-                         str(reading.humid_val), str(0 if reading.humid_state is False else 40), 'undefined'
+                         str(humid), str(0 if reading.humid_state is False else 40), 'undefined'
                          ]
 
             temp_data.append(temp_add)
             humid_data.append(humid_add)
 
     instant = str(reading_last)
-    temp_gauge = str(reading_last.temp_val)
-    humid_gauge = str(reading_last.humid_val)
+    temp_gauge = str(temp)
+    humid_gauge = str(humid)
 
     temp_add = ['new Date("' + str(reading_last.instant + timedelta(days=1)) + '")', 'undefined', 'undefined', 'undefined']
     humid_add = ['new Date("' + str(reading_last.instant + timedelta(days=1)) + '")', 'undefined', 'undefined', 'undefined']

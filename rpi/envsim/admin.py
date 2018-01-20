@@ -54,11 +54,11 @@ export.short_description = u"Export selected readings"
 class ReadingAdmin(admin.ModelAdmin):
 
     fieldsets = [
-        ('Values', {'fields': ['instant', 'temp_val', 'temp_val2', 'humid_val', 'humid_val2', 'error']}),
+        ('Values', {'fields': ['instant', 'temp_val', 'temp_val2', 'temp_val3', 'humid_val', 'humid_val2', 'humid_val3', 'error']}),
         ('States', {'fields': ['temp_state', 'humid_state', 'light_state']}),
     ]
 
-    readonly_fields = ('instant', 'temp_val', 'temp_val2','humid_val', 'humid_val2','error', 'temp_state', 'humid_state', 'light_state')
+    readonly_fields = ('instant', 'temp_val', 'temp_val2', 'temp_val3', 'humid_val', 'humid_val2', 'humid_val3', 'error', 'temp_state', 'humid_state', 'light_state')
 
     date_hierarchy = 'instant'
 
@@ -70,7 +70,7 @@ class ConfigAdmin(admin.ModelAdmin):
     fieldsets = [
         ('Values', {'fields': ['temp_low', 'temp_high', 'humid_low', 'humid_high', 'humid_count', 'humid_length', 'hour_morning', 'hour_night']}),
         ('States', {'fields': ['temp_state', 'humid_state', 'light_state']}),
-        ('Pins', {'fields': ['temp_humid_sensor', 'temp_humid_sensor2', 'temp_pin', 'humid_pin', 'light_pin']}),
+        ('Pins', {'fields': ['temp_humid_sensor', 'temp_humid_sensor2', 'temp_humid_sensor3', 'temp_pin', 'humid_pin', 'light_pin']}),
     ]
 
     readonly_fields = ('instant',)

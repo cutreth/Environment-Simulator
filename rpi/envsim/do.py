@@ -13,7 +13,7 @@ def sync():
     newReading(data)
     updateConfig(data)
 
-    old_readings = Reading.objects.filter(instant__lt=(datetime.datetime.now() - datetime.timedelta(days=14)))
+    old_readings = Reading.objects.filter(instant__lt=(datetime.datetime.now() - datetime.timedelta(days=7)))
     old_readings.delete()
 
 
@@ -54,10 +54,34 @@ def setTempHumid(data):
     humid_count = active_config.humid_count
     humid_length = active_config.humid_length
 
-    data['temp_val'], data['temp_val2'], data['humid_val'], data['humid_val2'], data['error'] = readSensor()
+    data['temp_val'], data['temp_val2'], data['temp_val3'], data['humid_val'], data['humid_val2'], data['humid_val3'], data['error'] = readSensor()
 
-    temp = (data['temp_val'] + data['temp_val2']) / 2
-    humid = (data['humid_val'] + data['humid_val2']) / 2
+    count = 0
+    temp = 0
+    humid = 0
+
+    if (data['temp_val'] != None) & (data['humid_val'] != None):
+        count = count + 1
+        temp = temp + data['temp_val']
+        humid = humid + data['humid_val']
+
+    if (data['temp_val2'] != None) & (data['humid_val2'] != None):
+        count = count + 1
+        temp = temp + data['temp_val2']
+        humid = humid + data['humid_val2']
+
+    if (data['temp_val3'] != None) & (data['humid_val3'] != None):
+        count = count + 1
+        temp = temp + data['temp_val3']
+        humid = humid + data['humid_val3']
+
+    if count == 0:
+        count = 1
+        temp = 96
+        humid = 96
+
+    temp = temp / count
+    humid = humid / count
 
     if temp <= temp_low:
         data['temp_state'] = True
@@ -103,8 +127,10 @@ def newReading(data):
     reading = Reading()
     reading.temp_val = data['temp_val']
     reading.temp_val2 = data['temp_val2']
+    reading.temp_val3 = data['temp_val3']
     reading.humid_val = data['humid_val']
     reading.humid_val2 = data['humid_val2']
+    reading.humid_val3 = data['humid_val3']
     reading.error = data['error']
     reading.temp_state = data['temp_state']
     reading.humid_state = data['humid_state']
@@ -158,20 +184,28 @@ def readSensor():
     active_config = getConfig()
     pin1 = active_config.temp_humid_sensor
     pin2 = active_config.temp_humid_sensor2
+    pin3 = active_config.temp_humid_sensor3
     error = False
 
     try:
-        humid_val, temp_val = Adafruit_DHT.read_retry(Adafruit_DHT.AM2302, pin1)
+        humid_val, temp_val = Adafruit_DHT.read_retry(Adafruit_DHT.AM2302, pin1, 5, 1)
     except Exception:
         humid_val = 11
         temp_val = 99
         error = True
 
     try:
-        humid_val2, temp_val2 = Adafruit_DHT.read_retry(Adafruit_DHT.AM2302, pin2)
+        humid_val2, temp_val2 = Adafruit_DHT.read_retry(Adafruit_DHT.AM2302, pin2, 5, 1)
     except Exception:
         humid_val2 = 11
         temp_val2 = 99
+        error = True
+
+    try:
+        humid_val3, temp_val3 = Adafruit_DHT.read_retry(Adafruit_DHT.AM2302, pin3, 5, 1)
+    except Exception:
+        humid_val3 = 11
+        temp_val3 = 99
         error = True
 
     try:
@@ -190,4 +224,24 @@ def readSensor():
         temp_val2 = 99
         error = True
 
-    return temp_val, temp_val2, humid_val, humid_val2, error
+    try:
+        temp_val3 = round(temp_val3 * 9 / 5 + 32, 1)
+        humid_val3 = round(humid_val3, 1)
+    except Exception:
+        humid_val3 = 11
+        temp_val3 = 99
+        error = True
+
+    if (temp_val < 50) or (humid_val < 40):
+        temp_val = None
+        humid_val = None
+
+    if (temp_val2 < 50) or (humid_val2 < 40):
+        temp_val2 = None
+        humid_val2 = None
+
+    if (temp_val3 < 50) or (humid_val3 < 40):
+        temp_val3 = None
+        humid_val3 = None
+
+    return temp_val, temp_val2, temp_val3, humid_val, humid_val2, humid_val3, error
